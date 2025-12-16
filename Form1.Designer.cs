@@ -34,5 +34,6 @@
         private Columns col_Todo;
         private Columns col_Doing;
         private Columns col_Done;
+        private TextBox txtSearch;
     }
 }

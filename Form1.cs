@@ -19,6 +19,7 @@ namespace DA_Trello
         private void InitializeComponent()
         {
             panel1 = new Panel();
+            txtSearch = new TextBox();
             label1 = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             col_Todo = new Columns();
@@ -31,6 +32,7 @@ namespace DA_Trello
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(255, 242, 198);
+            panel1.Controls.Add(txtSearch);
             panel1.Controls.Add(label1);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
@@ -38,6 +40,14 @@ namespace DA_Trello
             panel1.Size = new Size(1082, 50);
             panel1.TabIndex = 0;
             panel1.Paint += panel1_Paint;
+            // 
+            // txtSearch
+            // 
+            txtSearch.Location = new Point(259, 12);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(600, 27);
+            txtSearch.TabIndex = 1;
+            txtSearch.TextChanged += txtSearch_TextChanged;
             // 
             // label1
             // 
@@ -119,6 +129,16 @@ namespace DA_Trello
 
         }
 
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = txtSearch.Text;
+
+            // Gọi lệnh search cho từng cột em đang có
+            // (Thay tên biến colTodo, colDone bằng tên thật của em)
+            col_Doing.Search(keyword);
+            col_Todo.Search(keyword);
+            col_Done.Search(keyword);
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
           

@@ -153,30 +153,40 @@ namespace DA_Trello
         }
 
         // Trong hàm RenderList() của Cột (Column)
-        private void RenderList()
+        private void RenderList(string keyword = "")
         {
             this.flw_ColumnList.Controls.Clear(); // Xóa sạch giao diện cũ
-
+            string searchKey = keyword.Trim().ToLower();
             // Duyệt qua danh sách liên kết để vẽ lại
             NoteNode current = myInternalList.head;
             while (current != null)
             {
-                // Tạo giao diện thẻ
-                Cards card = new Cards();
-                card.SetData(current.Data);
-                card.Margin = new Padding(25, 10, 0, 0);
-                // --- ĐÂY LÀ DÒNG EM ĐANG THIẾU Ở CHỖ NÀY ---
-                // Gắn sự kiện cho những thẻ được load từ file
-                card.CardDragSuccess -= Card_CardDragSuccess;
-                card.CardDragSuccess += Card_CardDragSuccess;
-                // -------------------------------------------
-                card.OnDeleteClick -= Card_OnDeleteClick; // Gỡ trước cho chắc
-                card.OnDeleteClick += Card_OnDeleteClick;
-                this.flw_ColumnList.Controls.Add(card);
+                //lấy title với context
+                string title = current.Data.Title.ToLower();
+                string body = current.Data.Body.ToLower();
+                if (string.IsNullOrEmpty(searchKey) || title.Contains(searchKey) || body.Contains(searchKey))
+                {
+                    // Tạo giao diện thẻ
+                    Cards card = new Cards();
+                    card.SetData(current.Data);
+                    card.Margin = new Padding(25, 10, 0, 0);
+                    // --- ĐÂY LÀ DÒNG EM ĐANG THIẾU Ở CHỖ NÀY ---
+                    // Gắn sự kiện cho những thẻ được load từ file
+                    card.CardDragSuccess -= Card_CardDragSuccess;
+                    card.CardDragSuccess += Card_CardDragSuccess;
+                    // -------------------------------------------
+                    card.OnDeleteClick -= Card_OnDeleteClick; // Gỡ trước cho chắc
+                    card.OnDeleteClick += Card_OnDeleteClick;
+                    this.flw_ColumnList.Controls.Add(card);
+                }
                 current = current.Next;
             }
         }
-
+        public void Search(string keyword)
+        {
+            // Gọi lại hàm render với từ khóa
+            RenderList(keyword);
+        }
         private void flw_ColumnList_DragEnter(object sender, DragEventArgs e)
         {
             // Kiểm tra xem hàng gửi đến có phải là NoteEntry không?

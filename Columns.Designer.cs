@@ -111,6 +111,7 @@
             lbl_AddCard.Size = new Size(128, 24);
             lbl_AddCard.TabIndex = 0;
             lbl_AddCard.Text = "+ Add a card";
+            lbl_AddCard.Click += pnlAddCard_Click;
             // 
             // flw_ColumnList
             // 

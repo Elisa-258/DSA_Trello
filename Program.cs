@@ -1,4 +1,4 @@
-namespace DA_Trello
+﻿namespace DA_Trello
 {
     internal static class Program
     {
@@ -11,6 +11,9 @@ namespace DA_Trello
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware); // Hoặc HighDpiMode.DpiUnaware nếu muốn nó lì lợm không đổi
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
     }
