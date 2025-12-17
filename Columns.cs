@@ -360,10 +360,7 @@ namespace DA_Trello
                     // 3. Vẽ lại giao diện (để cái thẻ biến mất)
                     RenderList(myInternalList);
                 }
-                else
-                {
-                    MessageBox.Show("Lỗi ma ám: Không tìm thấy ID để xóa!");
-                }
+               
             }
         }
         private void cmbPrior_SelectedIndexChanged(object sender, EventArgs e)

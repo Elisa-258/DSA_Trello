@@ -186,6 +186,13 @@ namespace DA_Trello
             }
         }
 
+        private void SwapData(NoteNode nodeA, NoteNode nodeB)
+        {
+            NoteEntry temp = nodeA.Data;
+            nodeA.Data = nodeB.Data;
+            nodeB.Data = temp;
+        }
+
 
         public TrelloList SearchKeyWord(string keyword)
         {
@@ -240,6 +247,101 @@ namespace DA_Trello
                 if (match) return true; // Tìm thấy!
             }
             return false;
+        }
+
+        public void SortByTitle(bool ascending)
+        {
+            if (head == null || head.Next == null) return;
+
+            // Vòng lặp 1: Đi từ đầu đến áp chót
+            for (NoteNode current = head; current.Next != null; current = current.Next)
+            {
+                NoteNode target = current;
+
+                // Vòng lặp 2: Đi tìm "ứng viên" thay thế
+                for (NoteNode scanner = current.Next; scanner != null; scanner = scanner.Next)
+                {
+                    // So sánh không phân biệt hoa thường
+                    int comparison = string.Compare(scanner.Data.Title, target.Data.Title, StringComparison.OrdinalIgnoreCase);
+
+                    if (ascending)
+                    {
+                        // Tăng dần (A -> Z): Tìm thằng nhỏ hơn
+                        if (comparison < 0) target = scanner;
+                    }
+                    else
+                    {
+                        // Giảm dần (Z -> A): Tìm thằng lớn hơn
+                        if (comparison > 0) target = scanner;
+                    }
+                }
+
+                // Nếu tìm thấy ứng viên tốt hơn thì đổi chỗ
+                if (target != current)
+                {
+                    SwapData(current, target);
+                }
+            }
+        }
+
+        public void SortByPriority(bool ascending)
+        {
+            if (head == null || head.Next == null) return;
+
+            for (NoteNode current = head; current.Next != null; current = current.Next)
+            {
+                NoteNode target = current;
+
+                for (NoteNode scanner = current.Next; scanner != null; scanner = scanner.Next)
+                {
+                    // So sánh số nguyên
+                    if (ascending)
+                    {
+                        // Tăng dần (0 -> 9)
+                        if (scanner.Data.Priority < target.Data.Priority) target = scanner;
+                    }
+                    else
+                    {
+                        // Giảm dần (9 -> 0)
+                        if (scanner.Data.Priority > target.Data.Priority) target = scanner;
+                    }
+                }
+
+                if (target != current)
+                {
+                    SwapData(current, target);
+                }
+            }
+        }
+
+        public void SortByDate(bool ascending)
+        {
+            if (head == null || head.Next == null) return;
+
+            for (NoteNode current = head; current.Next != null; current = current.Next)
+            {
+                NoteNode target = current;
+
+                for (NoteNode scanner = current.Next; scanner != null; scanner = scanner.Next)
+                {
+                    // So sánh ngày tháng (DateTime hỗ trợ toán tử < >)
+                    if (ascending)
+                    {
+                        // Cũ nhất lên đầu (Oldest first)
+                        if (scanner.Data.CreationDate < target.Data.CreationDate) target = scanner;
+                    }
+                    else
+                    {
+                        // Mới nhất lên đầu (Newest first)
+                        if (scanner.Data.CreationDate > target.Data.CreationDate) target = scanner;
+                    }
+                }
+
+                if (target != current)
+                {
+                    SwapData(current, target);
+                }
+            }
         }
 
         // --- PHẦN 1: HÀM LƯU (SAVE) ---
