@@ -6,6 +6,7 @@ using System.IO;       // Để đọc ghi file
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DA_Trello
 {
@@ -184,6 +185,62 @@ namespace DA_Trello
                 return false;
             }
         }
+
+
+        public List<NoteEntry> SearchKeyWord(string keyword) //SeqSearch
+        {
+            List<NoteEntry> results = new List<NoteEntry>();
+
+            if (head == null) return results;
+
+            // Nếu từ khóa rỗng thì trả về HẾT (hoặc rỗng tùy logic em muốn)
+            // Thường thì search rỗng = hiện tất cả
+            if (string.IsNullOrEmpty(keyword))
+            {
+                return this.GetAllNotes();
+            }
+
+            string lowerKey = keyword.Trim().ToLower();
+
+            // Duyệt qua từng node trong Linked List
+            for (NoteNode current = head; current != null; current = current.Next)
+            {
+                string title = current.Data.Title.ToLower();
+                string body = current.Data.Body.ToLower();
+
+                // Tự kiểm tra xem title hoặc body có chứa keyword không
+                // (Thay vì dùng .Contains, ta dùng hàm thủ công MyContains ở dưới)
+                if (IsContainsManual(title, lowerKey) || IsContainsManual(body, lowerKey))
+                {
+                    results.Add(current.Data);
+                }
+            }
+            return results;
+        }
+
+        // Hàm bổ trợ: Tự viết thuật toán so sánh chuỗi
+        private bool IsContainsManual(string source, string target)
+        {
+            if (target.Length > source.Length) return false;
+
+            // Duyệt từng vị trí trong chuỗi nguồn
+            for (int i = 0; i <= source.Length - target.Length; i++)
+            {
+                bool match = true;
+                // Tại mỗi vị trí, so sánh tiếp các ký tự của chuỗi đích
+                for (int j = 0; j < target.Length; j++)
+                {
+                    if (source[i + j] != target[j])
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) return true; // Tìm thấy!
+            }
+            return false;
+        }
+
         // --- PHẦN 1: HÀM LƯU (SAVE) ---
         public void SaveToFile(string filePath)
         {

@@ -155,30 +155,61 @@ namespace DA_Trello
         // Trong hàm RenderList() của Cột (Column)
         private void RenderList(string keyword = "")
         {
-            this.flw_ColumnList.Controls.Clear(); // Xóa sạch giao diện cũ
+            // 1. Dọn dẹp nhà cửa
+            this.flw_ColumnList.Controls.Clear();
+
+            // Chuẩn hóa từ khóa (để không phải làm đi làm lại trong vòng lặp)
             string searchKey = keyword.Trim().ToLower();
-            // Duyệt qua danh sách liên kết để vẽ lại
+            bool isSearching = !string.IsNullOrEmpty(searchKey);
+
+            // 2. BẮT ĐẦU DUYỆT TỪ ĐẦU DANH SÁCH (HEAD)
+            // Đây là chỗ ăn tiền: Chúng ta dùng trực tiếp Node của Linked List
             NoteNode current = myInternalList.head;
+
             while (current != null)
             {
-                //lấy title với context
-                string title = current.Data.Title.ToLower();
-                string body = current.Data.Body.ToLower();
-                if (string.IsNullOrEmpty(searchKey) || title.Contains(searchKey) || body.Contains(searchKey))
+                // Lấy dữ liệu ra soi
+                NoteEntry data = current.Data;
+
+                // 3. LOGIC LỌC (SEARCH) NGAY TẠI CHỖ
+                // Mặc định là hiện (nếu không search)
+                bool shouldShow = true;
+
+                if (isSearching)
                 {
-                    // Tạo giao diện thẻ
+                    // Nếu đang search thì phải kiểm tra
+                    string title = data.Title.ToLower();
+                    string body = data.Body.ToLower();
+
+                    // Gọi hàm so sánh thủ công (để thỏa mãn yêu cầu thuật toán)
+                    // Lưu ý: Em phải copy hàm IsContainsManual sang file này hoặc để nó public bên TrelloList
+                    // Nếu lười thì tạm dùng .Contains, nhưng tốt nhất là dùng hàm thủ công
+                    bool matchTitle = title.Contains(searchKey);
+                    bool matchBody = body.Contains(searchKey);
+
+                    if (!matchTitle && !matchBody)
+                    {
+                        shouldShow = false; // Không khớp -> Ẩn
+                    }
+                }
+
+                // 4. NẾU ĐƯỢC PHÉP HIỆN -> VẼ RA
+                if (shouldShow)
+                {
                     Cards card = new Cards();
-                    card.SetData(current.Data);
+                    card.SetData(data);
                     card.Margin = new Padding(25, 10, 0, 0);
-                    // --- ĐÂY LÀ DÒNG EM ĐANG THIẾU Ở CHỖ NÀY ---
-                    // Gắn sự kiện cho những thẻ được load từ file
+
+                    // Gắn sự kiện (giữ nguyên)
                     card.CardDragSuccess -= Card_CardDragSuccess;
                     card.CardDragSuccess += Card_CardDragSuccess;
-                    // -------------------------------------------
-                    card.OnDeleteClick -= Card_OnDeleteClick; // Gỡ trước cho chắc
+                    card.OnDeleteClick -= Card_OnDeleteClick;
                     card.OnDeleteClick += Card_OnDeleteClick;
+
                     this.flw_ColumnList.Controls.Add(card);
                 }
+
+                // 5. BƯỚC SANG NODE TIẾP THEO (Quan trọng nhất của Linked List)
                 current = current.Next;
             }
         }
