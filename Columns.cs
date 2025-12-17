@@ -75,7 +75,7 @@ namespace DA_Trello
             NoteEntry newNote = new NoteEntry(title, msg, priority, tempFilePath);
 
             myInternalList.Add(newNote);
-            RenderList();
+            RenderList(myInternalList);
 
             // --- Reset giao diện về như cũ ---
             txtTitle.Clear();
@@ -120,7 +120,7 @@ namespace DA_Trello
             if (System.IO.File.Exists(path))
             {
                 myInternalList.LoadFromFile(path); // Gọi hàm Load hôm qua mình viết
-                RenderList(); // Vẽ lên màn hình
+                RenderList(myInternalList); // Vẽ lên màn hình
             }
 
             // 2. TÌM THẰNG CHA VÀ DẶN NÓ: "Sắp chết thì báo con!"
@@ -152,71 +152,55 @@ namespace DA_Trello
 
         }
 
-        // Trong hàm RenderList() của Cột (Column)
-        private void RenderList(string keyword = "")
+        // Nhận vào TrelloList chứ không phải List<> nữa
+        private void RenderList(TrelloList dataSource)
         {
-            // 1. Dọn dẹp nhà cửa
             this.flw_ColumnList.Controls.Clear();
 
-            // Chuẩn hóa từ khóa (để không phải làm đi làm lại trong vòng lặp)
-            string searchKey = keyword.Trim().ToLower();
-            bool isSearching = !string.IsNullOrEmpty(searchKey);
+            // Nếu danh sách rỗng hoặc null
+            if (dataSource == null || dataSource.head == null) return;
 
-            // 2. BẮT ĐẦU DUYỆT TỪ ĐẦU DANH SÁCH (HEAD)
-            // Đây là chỗ ăn tiền: Chúng ta dùng trực tiếp Node của Linked List
-            NoteNode current = myInternalList.head;
+            // DUYỆT TRÊN DANH SÁCH ĐƯỢC TRUYỀN VÀO
+            // (Lưu ý: dataSource có thể là list gốc hoặc list kết quả tìm kiếm)
+            NoteNode current = dataSource.head;
 
             while (current != null)
             {
-                // Lấy dữ liệu ra soi
-                NoteEntry data = current.Data;
+                // Vẽ thẻ
+                Cards card = new Cards();
+                card.SetData(current.Data);
+                card.Margin = new Padding(25, 10, 0, 0);
 
-                // 3. LOGIC LỌC (SEARCH) NGAY TẠI CHỖ
-                // Mặc định là hiện (nếu không search)
-                bool shouldShow = true;
+                // Gắn sự kiện
+                card.CardDragSuccess -= Card_CardDragSuccess;
+                card.CardDragSuccess += Card_CardDragSuccess;
+                card.OnDeleteClick -= Card_OnDeleteClick;
+                card.OnDeleteClick += Card_OnDeleteClick;
 
-                if (isSearching)
-                {
-                    // Nếu đang search thì phải kiểm tra
-                    string title = data.Title.ToLower();
-                    string body = data.Body.ToLower();
+                this.flw_ColumnList.Controls.Add(card);
 
-                    // Gọi hàm so sánh thủ công (để thỏa mãn yêu cầu thuật toán)
-                    // Lưu ý: Em phải copy hàm IsContainsManual sang file này hoặc để nó public bên TrelloList
-                    // Nếu lười thì tạm dùng .Contains, nhưng tốt nhất là dùng hàm thủ công
-                    bool matchTitle = title.Contains(searchKey);
-                    bool matchBody = body.Contains(searchKey);
-
-                    if (!matchTitle && !matchBody)
-                    {
-                        shouldShow = false; // Không khớp -> Ẩn
-                    }
-                }
-
-                // 4. NẾU ĐƯỢC PHÉP HIỆN -> VẼ RA
-                if (shouldShow)
-                {
-                    Cards card = new Cards();
-                    card.SetData(data);
-                    card.Margin = new Padding(25, 10, 0, 0);
-
-                    // Gắn sự kiện (giữ nguyên)
-                    card.CardDragSuccess -= Card_CardDragSuccess;
-                    card.CardDragSuccess += Card_CardDragSuccess;
-                    card.OnDeleteClick -= Card_OnDeleteClick;
-                    card.OnDeleteClick += Card_OnDeleteClick;
-
-                    this.flw_ColumnList.Controls.Add(card);
-                }
-
-                // 5. BƯỚC SANG NODE TIẾP THEO (Quan trọng nhất của Linked List)
                 current = current.Next;
             }
         }
-        public void Search(string keyword)
+        public void Search(string keyword = "")
         {
-            // Gọi lại hàm render với từ khóa
-            RenderList(keyword);
+            TrelloList listToRender;
+
+            if (string.IsNullOrEmpty(keyword))
+            {
+                // TRƯỜNG HỢP 1: KHÔNG SEARCH
+                // Render chính cái list gốc hiện tại (this.myInternalList)
+                listToRender = this.myInternalList;
+            }
+            else
+            {
+                // TRƯỜNG HỢP 2: CÓ SEARCH
+                // Gọi hàm Search -> Nó trả về một TrelloList MỚI chứa kết quả
+                listToRender = this.myInternalList.SearchKeyWord(keyword);
+            }
+
+            // Gửi hàng đi vẽ
+            RenderList(listToRender);
         }
         private void flw_ColumnList_DragEnter(object sender, DragEventArgs e)
         {
@@ -274,7 +258,7 @@ namespace DA_Trello
             // 4. Thêm vào danh sách và vẽ lại
             myInternalList.Add(newCard);
             myInternalList.SaveToFile(GetFilePath());
-            RenderList();
+            RenderList(myInternalList);
 
             // 5. Báo tin mừng về cho bên kia xóa
             e.Effect = DragDropEffects.Move;
@@ -341,7 +325,7 @@ namespace DA_Trello
 
                     // 3. Cập nhật giao diện
                     // Cách A: Vẽ lại từ đầu (An toàn nhất)
-                    RenderList();
+                    RenderList(myInternalList);
 
                     // Cách B: Chỉ xóa cái control đó thôi (Nhanh hơn, đỡ lag)
                     // this.FlowLayoutPanel.Controls.Remove(card);
@@ -374,7 +358,7 @@ namespace DA_Trello
                     myInternalList.SaveToFile(GetFilePath());
 
                     // 3. Vẽ lại giao diện (để cái thẻ biến mất)
-                    RenderList();
+                    RenderList(myInternalList);
                 }
                 else
                 {

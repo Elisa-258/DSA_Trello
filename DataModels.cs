@@ -187,35 +187,36 @@ namespace DA_Trello
         }
 
 
-        public List<NoteEntry> SearchKeyWord(string keyword) //SeqSearch
+        public TrelloList SearchKeyWord(string keyword)
         {
-            List<NoteEntry> results = new List<NoteEntry>();
+            // 1. Tạo một danh sách liên kết MỚI để chứa kết quả
+            TrelloList resultList = new TrelloList();
 
-            if (head == null) return results;
+            if (head == null) return resultList;
 
-            // Nếu từ khóa rỗng thì trả về HẾT (hoặc rỗng tùy logic em muốn)
-            // Thường thì search rỗng = hiện tất cả
-            if (string.IsNullOrEmpty(keyword))
-            {
-                return this.GetAllNotes();
-            }
+            string key = keyword.Trim().ToLower();
 
-            string lowerKey = keyword.Trim().ToLower();
-
-            // Duyệt qua từng node trong Linked List
-            for (NoteNode current = head; current != null; current = current.Next)
+            // 2. Duyệt danh sách GỐC
+            NoteNode current = head;
+            while (current != null)
             {
                 string title = current.Data.Title.ToLower();
                 string body = current.Data.Body.ToLower();
 
-                // Tự kiểm tra xem title hoặc body có chứa keyword không
-                // (Thay vì dùng .Contains, ta dùng hàm thủ công MyContains ở dưới)
-                if (IsContainsManual(title, lowerKey) || IsContainsManual(body, lowerKey))
+                // Kiểm tra khớp (dùng hàm thủ công IsContainsManual)
+                if (IsContainsManual(title, key) || IsContainsManual(body, key))
                 {
-                    results.Add(current.Data);
+                    // 3. TÌM THẤY -> ADD VÀO DANH SÁCH KẾT QUẢ
+                    // Ta dùng lại hàm Add() mà em đã viết cho TrelloList
+                    // Nó sẽ tự tạo Node mới và nối vào đuôi resultList
+                    resultList.Add(current.Data);
                 }
+
+                current = current.Next;
             }
-            return results;
+
+            // 4. Trả về cả cái danh sách mới
+            return resultList;
         }
 
         // Hàm bổ trợ: Tự viết thuật toán so sánh chuỗi
