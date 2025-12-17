@@ -127,7 +127,6 @@
             Font = new Font("iCiel Panton Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Name = "Cards";
             Size = new Size(300, 130);
-            Load += Cards_Load;
             MouseDown += Card_MouseDown;
             MouseEnter += CardItem_MouseEnter;
             MouseLeave += CardItem_MouseLeave;

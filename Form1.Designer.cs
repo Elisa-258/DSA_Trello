@@ -29,11 +29,11 @@
         #endregion
 
         private Panel panel1;
-        private Label label1;
+        private Label lblHeader;
         private TableLayoutPanel tableLayoutPanel1;
-        private Columns col_Todo;
-        private Columns col_Doing;
-        private Columns col_Done;
+        private Columns colTodo;
+        private Columns colDoing;
+        private Columns colDone;
         private TextBox txtSearch;
         private ComboBox cmbSort;
         private Label lblSearchBar;

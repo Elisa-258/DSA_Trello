@@ -20,34 +20,29 @@ namespace DA_Trello
         public Cards()
         {
             InitializeComponent();
-            this.MouseDown += Card_MouseDown;           // Kéo cái nền
-            CardTitle.MouseDown += Card_MouseDown;      // Kéo cái tiêu đề
-            CardContext.MouseDown += Card_MouseDown;    // Kéo cái nội dung
-                                                        // Nếu có Panel chứa thì gắn luôn cho Panel
-                                                        // pnlMain.MouseDown += Card_MouseDown;
+            //cho phép kéo card ở mọi element
+            this.MouseDown += Card_MouseDown;           
+            CardTitle.MouseDown += Card_MouseDown;      
+            CardContext.MouseDown += Card_MouseDown;    
         }
-        // Đây là cái "loa" để hét lên: "Ê có người bấm xóa tui nè!"
+
         public event EventHandler OnDeleteClick;
         
-        // Biến lưu dữ liệu gốc (để biết mình là ai mà xóa)
+        // Biến lưu dữ liệu gốc 
         public NoteEntry MyData { get; private set; }
-        // Hàm này giúp em truyền chữ vào thẻ nhanh gọn
         public void SetData(NoteEntry data)
         {
             this.MyData = data;
 
-            // 2. Gán thông tin cơ bản
+            // Gán thông tin cơ bản
             CardTitle.Text = data.Title;
             CardContext.Text = data.Body;
 
-            // 3. XỬ LÝ FILE (Code của em nằm ở đây nè - Chuẩn rồi)
+            // XỬ LÝ FILE 
             if (!string.IsNullOrEmpty(data.FilePath))
             {
                 lblFile.Visible = true;
-                // Lấy tên file cho gọn
                 lblFile.Text = "📄 " + System.IO.Path.GetFileName(data.FilePath);
-
-                // Lưu đường dẫn gốc vào Tag (Cái này thông minh, 10 điểm!)
                 lblFile.Tag = data.FilePath;
             }
             else
@@ -56,69 +51,62 @@ namespace DA_Trello
                 pnlFile.Visible = false;
             }
       
-            // 4. XỬ LÝ MÀU ƯU TIÊN (Priority) - Đừng quên cái này!
+            // XỬ LÝ MÀU ƯU TIÊN (Priority)
             switch (data.Priority)
             {
-                case 0: 
+                case 0: //khẩn
                     pnlPrior.BackColor = Color.Red;
                     break;
-                case 1:
+                case 1: //quan trọng
                     pnlPrior.BackColor = Color.Orange; 
                     break;
-                case 2: 
+                case 2: //không quan trọng
                     pnlPrior.BackColor = Color.ForestGreen;
                     break;
             } 
         }
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            // Khi nút X được bấm, kiểm tra xem có ai đang lắng nghe không (ColumnControl)
-            // Nếu có thì gọi sự kiện (Invoke)
+            // Khi nút X được bấm thì kiểm tra
             OnDeleteClick?.Invoke(this, EventArgs.Empty);
         }
-        // --- SỰ KIỆN KHI BẤM VÀO LINK ---
-        // (Em quay ra Design, double click vào LinkLabel để sinh hàm này)
+       
         private void LinkFile_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             string path = lblFile.Tag as string;
 
             if (!string.IsNullOrEmpty(path) && System.IO.File.Exists(path))
             {
-                // Lệnh này bảo Windows: "Hãy mở file này bằng app mặc định của mày đi"
+                //Để window mở file bằng app mặc định
                 Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
             }
             else
             {
-                MessageBox.Show("File này hình như bị xóa mất rồi!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Không tìm được file", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         // Thêm hiệu ứng: Rê chuột vào thì thẻ đổi màu xám nhẹ
         private void CardItem_MouseEnter(object sender, EventArgs e)
-            {
-                this.BackColor = Color.WhiteSmoke;
-            }
-
-            private void CardItem_MouseLeave(object sender, EventArgs e)
-            {
-                this.BackColor = Color.White;
-            }
-
-            private void Cards_Load(object sender, EventArgs e)
-            {
-
-            }
+        {
+            this.BackColor = Color.WhiteSmoke;
+        }
+        //trở về màu bình thường
+        private void CardItem_MouseLeave(object sender, EventArgs e)
+        {
+            this.BackColor = Color.White;
+        }
         private void Card_MouseDown(object sender, MouseEventArgs e)
         {
             // Chỉ kéo khi nhấn chuột trái
             if (e.Button == MouseButtons.Left && MyData != null)
             {
-                // 1. Bắt đầu lệnh kéo thả (DoDragDrop là hàm có sẵn của WinForms)
-                // Tham số 1: Dữ liệu cần gửi đi (Chính là cái NoteEntry)
-                // Tham số 2: Hiệu ứng (Move là di chuyển)
+                // Bắt đầu lệnh kéo thả
+                // Tham số 1: Dữ liệu cần gửi đi
+                // Tham số 2: Hiệu ứng 
                 DragDropEffects result = DoDragDrop(MyData, DragDropEffects.Move);
        
-                // 2. Nếu bên kia nhận thành công (kết quả trả về là Move)
+                //Nếu bên kia nhận thành công 
                 if (result == DragDropEffects.Move)
                 {
                     // Báo hiệu cho cột cũ biết để xóa đi

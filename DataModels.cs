@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json; // Cần cài NuGet 'Newtonsoft.Json'
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.Generic; // Để dùng List<> trung gian
-using System.IO;       // Để đọc ghi file
+using System.Collections.Generic; 
+using System.IO;       
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,27 +12,18 @@ namespace DA_Trello
 {
     public class NoteEntry
     {
-        //sinh id
-        public string ID { get; set; }
-        public string Title { get; set; }
-
-        // Nội dung chi tiết của ghi chú.
-        public string Body { get; set; }
-        // lấy thời gian hệ thống khi được tạo.
-        public DateTime CreationDate { get; set; }
-        //lấy độ ưu tiên
-        public int Priority { get; set; }
-        //lấy đường dẫn link
-        public string FilePath { get; set; }
-        //constructor
-
+        public string ID { get; set; } //tạo ra ID riêng biệt cho từng thẻ
+        public string Title { get; set; } //tiêu đề mỗi thẻ
+        public string Body { get; set; } //nội dung của thẻ
+        public DateTime CreationDate { get; set; } //ngày tạo thẻ
+        public int Priority { get; set; } //độ ưu tiên của thẻ
+        public string FilePath { get; set; } //lưu lại đường link chứa file
+        //Constructor cho card
         public NoteEntry(string title, string body,int priority = 0, string filepath = "")
         {
-
             ID = Guid.NewGuid().ToString();
             Title = title;
             Body = body;
-            // TỰ ĐỘNG CẬP NHẬT: Gán ngày giờ hệ thống hiện tại cho CreationDate
             this.CreationDate = DateTime.Now;
             Priority = priority;
             FilePath = filepath;
@@ -74,7 +65,7 @@ namespace DA_Trello
             tail = null;
         }
 
-        // Thuộc tính để lấy tất cả các ghi chú lalala
+        // Thuộc tính để lấy tất cả các ghi chú
         public List<NoteEntry> GetAllNotes()
         {
             var notes = new List<NoteEntry>();
@@ -110,16 +101,12 @@ namespace DA_Trello
         }
         public bool Remove(string id)
         {
-           
             if (head == null)
             {
-                
                 return false;
             }
-
             NoteNode current = head;
             NoteNode nodeToDelete = null;
-
             // 1. Giai đoạn TÌM KIẾM
             int index = 0;
             while (current != null)
@@ -130,7 +117,6 @@ namespace DA_Trello
 
                 if (currentID == id)
                 {
-         
                     nodeToDelete = current;
                     break; // Tìm thấy thì dừng ngay
                 }
@@ -142,7 +128,6 @@ namespace DA_Trello
             // 2. Giai đoạn CẮT BỎ
             if (nodeToDelete == null)
             {
-              
                 return false;
             }
 
@@ -185,15 +170,13 @@ namespace DA_Trello
                 return false;
             }
         }
-
+        //Swap 2 node với nhau
         private void SwapData(NoteNode nodeA, NoteNode nodeB)
         {
             NoteEntry temp = nodeA.Data;
             nodeA.Data = nodeB.Data;
             nodeB.Data = temp;
         }
-
-
         public TrelloList SearchKeyWord(string keyword)
         {
             // 1. Tạo một danh sách liên kết MỚI để chứa kết quả
@@ -210,12 +193,10 @@ namespace DA_Trello
                 string title = current.Data.Title.ToLower();
                 string body = current.Data.Body.ToLower();
 
-                // Kiểm tra khớp (dùng hàm thủ công IsContainsManual)
+                // Kiểm tra khớp 
                 if (IsContainsManual(title, key) || IsContainsManual(body, key))
                 {
                     // 3. TÌM THẤY -> ADD VÀO DANH SÁCH KẾT QUẢ
-                    // Ta dùng lại hàm Add() mà em đã viết cho TrelloList
-                    // Nó sẽ tự tạo Node mới và nối vào đuôi resultList
                     resultList.Add(current.Data);
                 }
 
@@ -226,16 +207,13 @@ namespace DA_Trello
             return resultList;
         }
 
-        // Hàm bổ trợ: Tự viết thuật toán so sánh chuỗi
+        // Hàm bổ trợ cho thuật toán tìm chuỗi
         private bool IsContainsManual(string source, string target)
         {
             if (target.Length > source.Length) return false;
-
-            // Duyệt từng vị trí trong chuỗi nguồn
             for (int i = 0; i <= source.Length - target.Length; i++)
             {
                 bool match = true;
-                // Tại mỗi vị trí, so sánh tiếp các ký tự của chuỗi đích
                 for (int j = 0; j < target.Length; j++)
                 {
                     if (source[i + j] != target[j])
@@ -244,12 +222,12 @@ namespace DA_Trello
                         break;
                     }
                 }
-                if (match) return true; // Tìm thấy!
+                if (match) return true; 
             }
             return false;
         }
 
-        // Selection Sort: Tìm Min rồi đổi chỗ
+        // Selection Sort
         public void SortByTitle()
         {
             if (head == null || head.Next == null) return;
@@ -260,7 +238,6 @@ namespace DA_Trello
 
                 for (NoteNode scanner = current.Next; scanner != null; scanner = scanner.Next)
                 {
-                    // So sánh A-Z (OrdinalIgnoreCase)
                     if (string.Compare(scanner.Data.Title, maxNode.Data.Title, StringComparison.OrdinalIgnoreCase) > 0)
                     {
                         maxNode = scanner;
@@ -274,7 +251,7 @@ namespace DA_Trello
             }
         }
 
-        // Insertion Sort: Chèn ngược
+        // Insertion Sort
         public void SortByPriority()
         {
             if (head == null || head.Next == null) return;
@@ -284,16 +261,13 @@ namespace DA_Trello
 
             while (current != null)
             {
-                // Lưu lại vị trí hiện tại để tí nữa đi tiếp
+                // Lưu lại vị trí hiện tại 
                 NoteNode nextNode = current.Next;
-
-                // Logic chèn ngược:
-                // So sánh 'current' với các thằng đứng trước nó (Prev)
                 NoteNode search = current;
 
                 while (search.Prev != null && search.Prev.Data.Priority < search.Data.Priority)
                 {
-                    // Thì đổi chỗ (Dịch chuyển data về phía trước)
+                    // Thì đổi chỗ 
                     SwapData(search, search.Prev);
 
                     // Lùi lại 1 bước để so sánh tiếp
@@ -319,16 +293,13 @@ namespace DA_Trello
                 // Duyệt từ đầu đến sát đuôi
                 while (current.Next != null)
                 {
-                    // So sánh ngày: Nếu thằng trước MỚI HƠN (lớn hơn) thằng sau -> Đẩy ra sau
-                    // (Mặc định xếp từ cũ -> mới)
                     if (current.Data.CreationDate > current.Next.Data.CreationDate)
                     {
                         SwapData(current, current.Next);
-                        swapped = true; // Có tráo đổi -> Phải chạy lại vòng nữa kiểm tra
+                        swapped = true; 
                     }
                     current = current.Next;
                 }
-                // Vòng do-while sẽ dừng khi chạy hết list mà không phải swap cái nào (đã xếp xong)
             } while (swapped);
         }
 
@@ -342,13 +313,11 @@ namespace DA_Trello
 
             while (current != null)
             {
-                temp = current.Prev; // lưu tạm Node trước
-                current.Prev = current.Next; // Next thành Prev
-                current.Next = temp; // Prev thành Next
-                current = current.Prev; // trỏ sang Node kế tiếp
+                temp = current.Prev; 
+                current.Prev = current.Next; 
+                current.Next = temp; 
+                current = current.Prev;
             }
-
-            // đổi head - tail
             if (temp != null)
             {
                 tail = head;
@@ -357,18 +326,14 @@ namespace DA_Trello
         }
         public void RemoveAll()
         {
-            // Cắt đứt đầu đuôi
             head = null;
             tail = null;
-
-            // Nếu em có biến đếm số lượng (count) thì reset luôn
-            // Count = 0; 
         }
 
         // --- PHẦN 1: HÀM LƯU (SAVE) ---
         public void SaveToFile(string filePath)
         {
-            // B1: Chuyển đổi Linked List sang List thường (để dễ nén thành JSON)
+            //Chuyển đổi Linked List sang List thường 
             List<NoteEntry> listToSave = new List<NoteEntry>();
             NoteNode current = head;
             while (current != null)
@@ -377,55 +342,50 @@ namespace DA_Trello
                 current = current.Next;
             }
 
-            // B2: Biến thành chuỗi JSON
-            // Formatting.Indented giúp file đẹp, dễ đọc bằng mắt thường
+            //Biến thành chuỗi JSON
             string json = JsonConvert.SerializeObject(listToSave, Formatting.Indented);
 
-            // B3: Ghi đè xuống ổ cứng
+            // Ghi đè xuống ổ cứng
             File.WriteAllText(filePath, json);
         }
 
         // --- PHẦN 2: HÀM TẢI (LOAD) ---
         public void LoadFromFile(string filePath)
         {
-            // B1: Kiểm tra file có tồn tại không? Không có thì nghỉ khỏe.
+            //Kiểm tra file có tồn tại
             if (!File.Exists(filePath)) return;
 
             try
             {
-                // B2: Đọc nội dung file lên
+                //Đọc nội dung file lên
                 string json = File.ReadAllText(filePath);
 
-                // B3: Giải mã JSON về lại thành List thường
+                //Giải mã JSON về lại thành List thường
                 List<NoteEntry> loadedList = JsonConvert.DeserializeObject<List<NoteEntry>>(json);
 
-                // B4: QUAN TRỌNG - Xóa sạch danh sách hiện tại đi
+                //Xóa sạch danh sách hiện tại đi
                 this.Clear();
 
-                // B5: Đổ dữ liệu từ List thường vào lại Linked List
+                //Đổ dữ liệu từ List thường vào lại Linked List
                 if (loadedList != null)
                 {
                     foreach (var item in loadedList)
                     {
-                        this.Add(item); // Tái sử dụng hàm Add em đã viết
+                        this.Add(item); 
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Lỡ file bị lỗi format thì lờ đi hoặc báo lỗi
-                // Console.WriteLine("Lỗi đọc file: " + ex.Message);
+                Console.WriteLine("Lỗi đọc file: " + ex.Message);
             }
         }
 
         // --- PHẦN 3: HÀM DỌN DẸP (CLEAR) ---
-        // Em cần hàm này để xóa trắng danh sách trước khi Load
         public void Clear()
         {
             head = null;
-            // Nếu em có biến 'tail' hay 'count' thì nhớ reset về null/0 luôn nhé
-            // tail = null;
-            // count = 0;
+            tail = null;
         }
     }
 }

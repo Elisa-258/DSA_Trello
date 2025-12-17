@@ -23,56 +23,45 @@ namespace DA_Trello
         public void SetupColumn(string title, Color headerColor)
         {
             lblColumnTitle.Text = title;
-            pnl_ColumnTitle.BackColor = headerColor; // (Nếu em có panel header)
+            pnl_ColumnTitle.BackColor = headerColor; 
         }
-        // Hàm tạo tên file: ví dụ cột tên "DOING" -> file là "data_DOING.json"
         private string GetFilePath()
         {
-            // Giả sử cái Label tiêu đề của em tên là lblColumnTitle
-            // Nếu em dùng Panel chứa chữ thì nhớ lấy Text của cái Control bên trong nhé
-            // Ở đây tôi ví dụ em có biến lưu Title
-            string cleanTitle = this.Name; // Hoặc lấy từ Label: lblTitle.Text.Trim();
-
-            // Đảm bảo không có ký tự bậy bạ trong tên file
+            string cleanTitle = this.Name; 
             return $"data_{cleanTitle}.json";
         }
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-        // Thuộc tính này sẽ hiện ra bên bảng Properties ở Form chính
+        //dùng để thay tên cho các cột
         public string Title
         {
-            get { return lblColumnTitle.Text; } // (Thay lblTitle bằng tên thật cái Label của em)
+            get { return lblColumnTitle.Text; } 
             set { lblColumnTitle.Text = value; }
         }
+        //dùng đổi màu cho các cột
         public Color HeaderColor
         {
-            get { return pnl_ColumnTitle.BackColor; } // Trả về màu hiện tại
-            set { pnl_ColumnTitle.BackColor = value; } // Gán màu mới
+            get { return pnl_ColumnTitle.BackColor; } 
+            set { pnl_ColumnTitle.BackColor = value; } 
         }
-        // 1. KHI BẤM NÚT "+ Add a card"
+        // KHI BẤM NÚT "+ Add a card"
         private void pnlAddCard_Click(object sender, EventArgs e)
         {
-            pnlAddButtonWrapper.Visible = false; // Giấu nút kích hoạt
-            pnlAddCardWrapper.Visible = true;      // Hiện khung nhập liệu
-            txtTitle.Focus();             // Đưa con trỏ vào ô nhập luôn cho tiện
+            pnlAddCardWrapper.Visible = false; // Giấu nút kích hoạt
+            pnlInputWrapper.Visible = true;      // Hiện khung nhập liệu
+            txtTitle.Focus();             // Đưa con trỏ vào ô nhập
         }
 
-        // 2. KHI BẤM NÚT "SAVE" (Thêm thẻ)
+        // KHI BẤM NÚT "SAVE" (Thêm thẻ)
         private void btnSave_Click(object sender, EventArgs e)
         {
             string title = txtTitle.Text.Trim();
-            string msg = txtContext.Text.Trim();
+            string body = txtContext.Text.Trim();
 
             if (string.IsNullOrEmpty(title)) return;
 
             int priority = cmbPrior.SelectedIndex;
             if (priority < 0) priority = 0;
 
-
-            // --- Logic thêm vào Linked List (như cũ) ---
-            NoteEntry newNote = new NoteEntry(title, msg, priority, tempFilePath);
+            NoteEntry newNote = new NoteEntry(title, body, priority, tempFilePath);
 
             myInternalList.Add(newNote);
             RenderList(myInternalList);
@@ -82,48 +71,46 @@ namespace DA_Trello
             txtContext.Clear();
 
             // Đóng khung nhập lại
-            pnlAddCardWrapper.Visible = false;
-            pnlAddButtonWrapper.Visible = true;
+            pnlInputWrapper.Visible = false;
+            pnlAddCardWrapper.Visible = true;
         }
 
-        // 3. (Optional) KHI BẤM NÚT HỦY (Nếu em có làm nút X)
+        //KHI BẤM NÚT HỦY
         private void btnCancel_Click(object sender, EventArgs e)
         {
+            //Xóa tất cả rồi ẩn thằng input đi
             txtTitle.Clear();
             txtContext.Clear();
-            pnlAddCardWrapper.Visible = false;
-            pnlAddButtonWrapper.Visible = true;
+            pnlInputWrapper.Visible = false;
+            pnlAddCardWrapper.Visible = true;
         }
         private void btnAttach_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
             openFile.Title = "Chọn tài liệu đính kèm";
 
-            // Nếu muốn lọc chỉ lấy ảnh hoặc pdf thì dùng dòng dưới (không bắt buộc)
-            // openFile.Filter = "Image Files|*.jpg;*.jpeg;*.png|All Files|*.*";
-
             if (openFile.ShowDialog() == DialogResult.OK)
             {
-                // 1. Lưu đường dẫn vào biến tạm
+                //Lưu đường dẫn vào biến tạm
                 tempFilePath = openFile.FileName;
 
                 lblShowNameFile.Text = System.IO.Path.GetFileName(tempFilePath);
-                lblShowNameFile.ForeColor = Color.Blue; // Đổi màu xanh cho nổi
+                lblShowNameFile.ForeColor = Color.Blue;
             }
         }
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            // 1. TỰ ĐỘNG LOAD DỮ LIỆU KHI MỞ LÊN
+            //TỰ ĐỘNG LOAD DỮ LIỆU KHI MỞ LÊN
             string path = GetFilePath();
             if (System.IO.File.Exists(path))
             {
-                myInternalList.LoadFromFile(path); // Gọi hàm Load hôm qua mình viết
-                RenderList(myInternalList); // Vẽ lên màn hình
+                myInternalList.LoadFromFile(path); 
+                RenderList(myInternalList); 
             }
 
-            // 2. TÌM THẰNG CHA VÀ DẶN NÓ: "Sắp chết thì báo con!"
+            //Tìm parent và thông báo trước khi tắt
             if (this.ParentForm != null)
             {
                 this.ParentForm.FormClosing += ParentForm_FormClosing;
@@ -135,21 +122,7 @@ namespace DA_Trello
         {
             // TỰ ĐỘNG LƯU
             string path = GetFilePath();
-            myInternalList.SaveToFile(path); // Gọi hàm Save hôm qua mình viết
-        }
-        private void txtTitle_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-
+            myInternalList.SaveToFile(path); 
         }
 
         // Nhận vào TrelloList chứ không phải List<> nữa
@@ -198,21 +171,17 @@ namespace DA_Trello
                 // Gọi hàm Search -> Nó trả về một TrelloList MỚI chứa kết quả
                 listToRender = this.myInternalList.SearchKeyWord(keyword);
             }
-
-            // Gửi hàng đi vẽ
             RenderList(listToRender);
         }
         private void flw_ColumnList_DragEnter(object sender, DragEventArgs e)
         {
-            // Kiểm tra xem hàng gửi đến có phải là NoteEntry không?
+            // Kiểm tra xem hàng gửi đến có phải là NoteEntry 
             if (e.Data.GetDataPresent(typeof(NoteEntry)))
             {
-                // Nếu đúng là "đồng loại", cho phép di chuyển
                 e.Effect = DragDropEffects.Move;
             }
             else
             {
-                // Nếu là rác (file từ ngoài desktop, text linh tinh) thì chặn
                 e.Effect = DragDropEffects.None;
             }
         }
@@ -239,33 +208,30 @@ namespace DA_Trello
                 current = current.Next;
             }
 
-            // Nếu đã tồn tại rồi -> Đây là lần chạy thứ 2 (Lỗi Double Drop) hoặc người dùng cố tình drop vào chỗ cũ
+            // Nếu đã tồn tại rồi 
             if (isExist)
             {
-                // Báo hiệu Move thành công (để bên kia vẫn xóa thằng gốc đi nếu cần)
-                // NHƯNG KHÔNG ADD THÊM VÀO LIST NỮA
                 e.Effect = DragDropEffects.None;
-                return; // <--- CẮT NGAY, KHÔNG CHẠY XUỐNG DƯỚI
+                return; 
             }
-            // ------------------------------------------------
-
-            // 3. Nếu chưa tồn tại thì mới tạo mới (CLONE)
+           
+            // Nếu chưa tồn tại thì mới tạo mới (CLONE)
             NoteEntry newCard = new NoteEntry(receivedData.Title, receivedData.Body, receivedData.Priority, receivedData.FilePath);
 
-            // BẮT BUỘC: Ép ID của thằng mới phải giống hệt thằng cũ
+            // Ép ID của card mới phải giống hệt cũ
             newCard.ID = receivedData.ID;
 
-            // 4. Thêm vào danh sách và vẽ lại
+            //hêm vào danh sách và vẽ lại
             myInternalList.Add(newCard);
             myInternalList.SaveToFile(GetFilePath());
             RenderList(myInternalList);
 
-            // 5. Báo tin mừng về cho bên kia xóa
+            // Báo thành công để xóa
             e.Effect = DragDropEffects.Move;
         }
         private void Column_DragOver(object sender, DragEventArgs e)
         {
-            // 1. Lấy dữ liệu đang được kéo
+            //Lấy dữ liệu đang được kéo
             NoteEntry draggingData = e.Data.GetData(typeof(NoteEntry)) as NoteEntry;
 
             // Nếu không phải là NoteEntry thì cấm tiệt
@@ -275,7 +241,7 @@ namespace DA_Trello
                 return;
             }
 
-            // 2. CHECK: Cái thẻ này có đang nằm trong nhà mình không?
+            // Cái thẻ này có đang nằm trong cột này không
             bool isAlreadyHere = false;
             NoteNode current = myInternalList.head;
 
@@ -290,15 +256,13 @@ namespace DA_Trello
                 current = current.Next;
             }
 
-            // 3. QUYẾT ĐỊNH SỐ PHẬN
+            //Nếu đã tồn tại
             if (isAlreadyHere)
             {
-                // Nếu đã có trong cột này -> Hiện biển CẤM (Vòng tròn gạch chéo)
                 e.Effect = DragDropEffects.None;
             }
             else
             {
-                // Nếu chưa có -> Hiện mũi tên MOVE
                 e.Effect = DragDropEffects.Move;
             }
         }
@@ -306,30 +270,21 @@ namespace DA_Trello
         private void Card_CardDragSuccess(object sender, EventArgs e)
         {
             // Lấy ra cái Card vừa gửi tin nhắn
-            // (Thay CardControl bằng tên class UserControl Card thật của em)
             var card = sender as Cards;
-
             if (card == null) return;
-
-            // Dùng BeginInvoke để đảm bảo an toàn luồng UI (như em đã làm)
+            //tạo luồn mới cho an toàn
             this.BeginInvoke(new Action(() =>
             {
-                // 1. Xóa khỏi danh sách liên kết (Data)
-                // Gọi cái hàm Remove kiểu bool mới sửa lúc nãy
+                //Xóa khỏi danh sách liên kết (Data)
                 bool deleted = myInternalList.Remove(card.MyData.ID);
 
                 if (deleted)
                 {
-                    // 2. Lưu lại file (nếu cần)
+                    //Lưu lại file
                     myInternalList.SaveToFile(GetFilePath());
 
-                    // 3. Cập nhật giao diện
-                    // Cách A: Vẽ lại từ đầu (An toàn nhất)
+                    // Cập nhật giao diện
                     RenderList(myInternalList);
-
-                    // Cách B: Chỉ xóa cái control đó thôi (Nhanh hơn, đỡ lag)
-                    // this.FlowLayoutPanel.Controls.Remove(card);
-
 
                 }
 
@@ -349,37 +304,27 @@ namespace DA_Trello
 
             if (confirmResult == DialogResult.Yes)
             {
-                // 1. Gọi hàm Remove thần thánh mà tôi vừa viết lại cho em
                 bool isDeleted = myInternalList.Remove(card.MyData.ID);
 
                 if (isDeleted)
                 {
-                    // 2. Lưu file ngay lập tức
                     myInternalList.SaveToFile(GetFilePath());
-
-                    // 3. Vẽ lại giao diện (để cái thẻ biến mất)
                     RenderList(myInternalList);
                 }
 
             }
         }
-        private void cmbPrior_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void btn_RemoveAll_Click(object sender, EventArgs e)
         {
             
-            // 1. Kiểm tra: Nếu danh sách đang rỗng thì thôi, hỏi làm gì cho mệt
+            // Kiểm tra: Nếu danh sách đang rỗng thì thôi
             if (myInternalList.head == null)
             {
                 return;
             }
 
-            // 2. HỎI XÁC NHẬN (Quan trọng nhất)
-            // MessageBoxButtons.YesNo: Hiện nút Yes/No
-            // MessageBoxIcon.Warning: Hiện cái khiên vàng cảnh báo
+            // HỎI XÁC NHẬN 
             DialogResult result = MessageBox.Show(
                 "Bạn có muốn xóa toàn bộ thẻ trong cột này không?\nHành động này không thể hoàn tác.",
                 "Xác nhận xóa tất cả",
@@ -387,22 +332,17 @@ namespace DA_Trello
                 MessageBoxIcon.Warning
             );
 
-            // 3. Nếu chọn YES thì mới ra tay
+            //Nếu chọn YES 
             if (result == DialogResult.Yes)
             {
-                // A. Xóa trong RAM (Linked List)
+                // Xóa trong Linked List
                 myInternalList.Clear();
 
-                // B. Xóa trong Ổ CỨNG (Lưu đè file rỗng lên file cũ)
-                // QUAN TRỌNG: Quên dòng này là tắt app bật lại nó hiện hồn về đấy
+                // Xóa trong Ổ CỨNG
                 myInternalList.SaveToFile(GetFilePath());
 
-                // C. Xóa trên GIAO DIỆN
-                // Cách 1: Gọi RenderList() -> Nó thấy list rỗng nó tự xóa hết
-                RenderList(myInternalList);
-
-                // Cách 2: Xóa trực tiếp cho lẹ (nếu muốn tối ưu)
-                // this.flw_ColumnList.Controls.Clear();
+                //Xóa trên GIAO DIỆN
+                this.flw_ColumnList.Controls.Clear();
             }
         }
     

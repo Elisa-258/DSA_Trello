@@ -32,12 +32,12 @@
             pnl_ColumnTitle = new Panel();
             btn_RemoveAll = new Button();
             lblColumnTitle = new Label();
-            pnl_AddCard = new Panel();
+            pnlAddCard = new Panel();
             lbl_AddCard = new Label();
             flw_ColumnList = new FlowLayoutPanel();
-            pnlAddButtonWrapper = new Panel();
             pnlAddCardWrapper = new Panel();
-            pnlAddFile = new Panel();
+            pnlInputWrapper = new Panel();
+            pnlShowFile = new Panel();
             lblShowNameFile = new Label();
             pnlInput = new Panel();
             btn_Cancel = new Button();
@@ -46,10 +46,10 @@
             txtContext = new TextBox();
             txtTitle = new TextBox();
             pnl_ColumnTitle.SuspendLayout();
-            pnl_AddCard.SuspendLayout();
-            pnlAddButtonWrapper.SuspendLayout();
+            pnlAddCard.SuspendLayout();
             pnlAddCardWrapper.SuspendLayout();
-            pnlAddFile.SuspendLayout();
+            pnlInputWrapper.SuspendLayout();
+            pnlShowFile.SuspendLayout();
             pnlInput.SuspendLayout();
             SuspendLayout();
             // 
@@ -64,7 +64,6 @@
             cmbPrior.Name = "cmbPrior";
             cmbPrior.Size = new Size(280, 28);
             cmbPrior.TabIndex = 1;
-            cmbPrior.SelectedIndexChanged += cmbPrior_SelectedIndexChanged;
             // 
             // pnl_ColumnTitle
             // 
@@ -101,19 +100,18 @@
             lblColumnTitle.Size = new Size(56, 24);
             lblColumnTitle.TabIndex = 0;
             lblColumnTitle.Text = "ToDo";
-            lblColumnTitle.Click += label1_Click;
             // 
-            // pnl_AddCard
+            // pnlAddCard
             // 
-            pnl_AddCard.BackColor = Color.White;
-            pnl_AddCard.Controls.Add(lbl_AddCard);
-            pnl_AddCard.Location = new Point(25, 8);
-            pnl_AddCard.Margin = new Padding(0);
-            pnl_AddCard.Name = "pnl_AddCard";
-            pnl_AddCard.Padding = new Padding(25, 10, 25, 0);
-            pnl_AddCard.Size = new Size(300, 50);
-            pnl_AddCard.TabIndex = 1;
-            pnl_AddCard.Click += pnlAddCard_Click;
+            pnlAddCard.BackColor = Color.White;
+            pnlAddCard.Controls.Add(lbl_AddCard);
+            pnlAddCard.Location = new Point(25, 8);
+            pnlAddCard.Margin = new Padding(0);
+            pnlAddCard.Name = "pnlAddCard";
+            pnlAddCard.Padding = new Padding(25, 10, 25, 0);
+            pnlAddCard.Size = new Size(300, 50);
+            pnlAddCard.TabIndex = 1;
+            pnlAddCard.Click += pnlAddCard_Click;
             // 
             // lbl_AddCard
             // 
@@ -143,34 +141,34 @@
             flw_ColumnList.DragEnter += flw_ColumnList_DragEnter;
             flw_ColumnList.DragOver += Column_DragOver;
             // 
-            // pnlAddButtonWrapper
-            // 
-            pnlAddButtonWrapper.Controls.Add(pnl_AddCard);
-            pnlAddButtonWrapper.Dock = DockStyle.Top;
-            pnlAddButtonWrapper.Location = new Point(0, 295);
-            pnlAddButtonWrapper.Name = "pnlAddButtonWrapper";
-            pnlAddButtonWrapper.Size = new Size(350, 60);
-            pnlAddButtonWrapper.TabIndex = 0;
-            // 
             // pnlAddCardWrapper
             // 
-            pnlAddCardWrapper.Controls.Add(pnlAddFile);
-            pnlAddCardWrapper.Controls.Add(pnlInput);
+            pnlAddCardWrapper.Controls.Add(pnlAddCard);
             pnlAddCardWrapper.Dock = DockStyle.Top;
-            pnlAddCardWrapper.Location = new Point(0, 45);
+            pnlAddCardWrapper.Location = new Point(0, 295);
             pnlAddCardWrapper.Name = "pnlAddCardWrapper";
-            pnlAddCardWrapper.Size = new Size(350, 250);
+            pnlAddCardWrapper.Size = new Size(350, 60);
             pnlAddCardWrapper.TabIndex = 0;
-            pnlAddCardWrapper.Visible = false;
             // 
-            // pnlAddFile
+            // pnlInputWrapper
             // 
-            pnlAddFile.BackColor = Color.White;
-            pnlAddFile.Controls.Add(lblShowNameFile);
-            pnlAddFile.Location = new Point(25, 210);
-            pnlAddFile.Name = "pnlAddFile";
-            pnlAddFile.Size = new Size(300, 40);
-            pnlAddFile.TabIndex = 1;
+            pnlInputWrapper.Controls.Add(pnlShowFile);
+            pnlInputWrapper.Controls.Add(pnlInput);
+            pnlInputWrapper.Dock = DockStyle.Top;
+            pnlInputWrapper.Location = new Point(0, 45);
+            pnlInputWrapper.Name = "pnlInputWrapper";
+            pnlInputWrapper.Size = new Size(350, 250);
+            pnlInputWrapper.TabIndex = 0;
+            pnlInputWrapper.Visible = false;
+            // 
+            // pnlShowFile
+            // 
+            pnlShowFile.BackColor = Color.White;
+            pnlShowFile.Controls.Add(lblShowNameFile);
+            pnlShowFile.Location = new Point(25, 210);
+            pnlShowFile.Name = "pnlShowFile";
+            pnlShowFile.Size = new Size(300, 40);
+            pnlShowFile.TabIndex = 1;
             // 
             // lblShowNameFile
             // 
@@ -248,7 +246,6 @@
             txtTitle.Name = "txtTitle";
             txtTitle.Size = new Size(280, 27);
             txtTitle.TabIndex = 0;
-            txtTitle.TextChanged += txtTitle_TextChanged;
             // 
             // Columns
             // 
@@ -256,20 +253,20 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Transparent;
             Controls.Add(flw_ColumnList);
-            Controls.Add(pnlAddButtonWrapper);
             Controls.Add(pnlAddCardWrapper);
+            Controls.Add(pnlInputWrapper);
             Controls.Add(pnl_ColumnTitle);
             Name = "Columns";
             Size = new Size(350, 500);
             DragOver += Column_DragOver;
             pnl_ColumnTitle.ResumeLayout(false);
             pnl_ColumnTitle.PerformLayout();
-            pnl_AddCard.ResumeLayout(false);
-            pnl_AddCard.PerformLayout();
-            pnlAddButtonWrapper.ResumeLayout(false);
+            pnlAddCard.ResumeLayout(false);
+            pnlAddCard.PerformLayout();
             pnlAddCardWrapper.ResumeLayout(false);
-            pnlAddFile.ResumeLayout(false);
-            pnlAddFile.PerformLayout();
+            pnlInputWrapper.ResumeLayout(false);
+            pnlShowFile.ResumeLayout(false);
+            pnlShowFile.PerformLayout();
             pnlInput.ResumeLayout(false);
             pnlInput.PerformLayout();
             ResumeLayout(false);
@@ -279,18 +276,18 @@
 
         private Panel pnl_ColumnTitle;
         private Label lblColumnTitle;
-        private Panel pnl_AddCard;
+        private Panel pnlAddCard;
         private Label lbl_AddCard;
         private FlowLayoutPanel flw_ColumnList;
-        private Panel pnlAddButtonWrapper;
         private Panel pnlAddCardWrapper;
+        private Panel pnlInputWrapper;
         private Panel pnlInput;
         private TextBox txtTitle;
         private TextBox txtContext;
         private Button btn_AddFile;
         private Button btnSave;
         private Button btn_Cancel;
-        private Panel pnlAddFile;
+        private Panel pnlShowFile;
         private Label lblShowNameFile;
         private ComboBox cmbPrior;
         private Button btn_RemoveAll;

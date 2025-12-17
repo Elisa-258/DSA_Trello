@@ -10,25 +10,35 @@ namespace DA_Trello
         public Form1()
         {
             InitializeComponent();
-
         }
-
         private void InitializeComponent()
         {
+            Label lblHeader;
             panel1 = new Panel();
             btnAsc = new Button();
             lblSort = new Label();
             lblSearchBar = new Label();
             cmbSort = new ComboBox();
             txtSearch = new TextBox();
-            label1 = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
-            col_Todo = new Columns();
-            col_Doing = new Columns();
-            col_Done = new Columns();
+            colTodo = new Columns();
+            colDoing = new Columns();
+            colDone = new Columns();
+            lblHeader = new Label();
             panel1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
+            // 
+            // lblHeader
+            // 
+            lblHeader.AutoSize = true;
+            lblHeader.Font = new Font("iCiel Panton Black Italic", 16.1999989F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblHeader.ForeColor = Color.Black;
+            lblHeader.Location = new Point(12, 9);
+            lblHeader.Name = "lblHeader";
+            lblHeader.Size = new Size(133, 32);
+            lblHeader.TabIndex = 0;
+            lblHeader.Text = "My Board";
             // 
             // panel1
             // 
@@ -38,7 +48,7 @@ namespace DA_Trello
             panel1.Controls.Add(lblSearchBar);
             panel1.Controls.Add(cmbSort);
             panel1.Controls.Add(txtSearch);
-            panel1.Controls.Add(label1);
+            panel1.Controls.Add(lblHeader);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
@@ -102,26 +112,15 @@ namespace DA_Trello
             txtSearch.TabIndex = 1;
             txtSearch.TextChanged += txtSearch_TextChanged;
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("iCiel Panton Black Italic", 16.1999989F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.ForeColor = Color.Black;
-            label1.Location = new Point(12, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(133, 32);
-            label1.TabIndex = 0;
-            label1.Text = "My Board";
-            // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 3;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Controls.Add(col_Todo, 0, 0);
-            tableLayoutPanel1.Controls.Add(col_Doing, 1, 0);
-            tableLayoutPanel1.Controls.Add(col_Done, 2, 0);
+            tableLayoutPanel1.Controls.Add(colTodo, 0, 0);
+            tableLayoutPanel1.Controls.Add(colDoing, 1, 0);
+            tableLayoutPanel1.Controls.Add(colDone, 2, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 50);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -130,35 +129,35 @@ namespace DA_Trello
             tableLayoutPanel1.Size = new Size(1082, 603);
             tableLayoutPanel1.TabIndex = 1;
             // 
-            // col_Todo
+            // colTodo
             // 
-            col_Todo.BackColor = Color.Transparent;
-            col_Todo.HeaderColor = Color.FromArgb(192, 192, 255);
-            col_Todo.Location = new Point(3, 3);
-            col_Todo.Name = "col_Todo";
-            col_Todo.Size = new Size(354, 597);
-            col_Todo.TabIndex = 0;
-            col_Todo.Title = "ToDo";
+            colTodo.BackColor = Color.Transparent;
+            colTodo.HeaderColor = Color.FromArgb(192, 192, 255);
+            colTodo.Location = new Point(3, 3);
+            colTodo.Name = "colTodo";
+            colTodo.Size = new Size(354, 597);
+            colTodo.TabIndex = 0;
+            colTodo.Title = "ToDo";
             // 
-            // col_Doing
+            // colDoing
             // 
-            col_Doing.BackColor = Color.Transparent;
-            col_Doing.HeaderColor = Color.FromArgb(192, 255, 192);
-            col_Doing.Location = new Point(363, 3);
-            col_Doing.Name = "col_Doing";
-            col_Doing.Size = new Size(354, 597);
-            col_Doing.TabIndex = 1;
-            col_Doing.Title = "Doing";
+            colDoing.BackColor = Color.Transparent;
+            colDoing.HeaderColor = Color.FromArgb(192, 255, 192);
+            colDoing.Location = new Point(363, 3);
+            colDoing.Name = "colDoing";
+            colDoing.Size = new Size(354, 597);
+            colDoing.TabIndex = 1;
+            colDoing.Title = "Doing";
             // 
-            // col_Done
+            // colDone
             // 
-            col_Done.BackColor = Color.Transparent;
-            col_Done.HeaderColor = Color.FromArgb(255, 192, 192);
-            col_Done.Location = new Point(723, 3);
-            col_Done.Name = "col_Done";
-            col_Done.Size = new Size(356, 597);
-            col_Done.TabIndex = 2;
-            col_Done.Title = "Done";
+            colDone.BackColor = Color.Transparent;
+            colDone.HeaderColor = Color.FromArgb(255, 192, 192);
+            colDone.Location = new Point(723, 3);
+            colDone.Name = "colDone";
+            colDone.Size = new Size(356, 597);
+            colDone.TabIndex = 2;
+            colDone.Title = "Done";
             // 
             // Form1
             // 
@@ -181,17 +180,14 @@ namespace DA_Trello
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             string keyword = txtSearch.Text;
-
-            // Gọi lệnh search cho từng cột em đang có
-            // (Thay tên biến colTodo, colDone bằng tên thật của em)
-            col_Doing.Search(keyword);
-            col_Todo.Search(keyword);
-            col_Done.Search(keyword);
+            colDoing.Search(keyword);
+            colTodo.Search(keyword);
+            colDone.Search(keyword);
         }
 
         private void btnAsc_Click(object sender, EventArgs e)
         {
-            bool isAscending = btnAsc.Text == "⬆"; // Ví dụ check text nút
+            bool isAscending = btnAsc.Text == "⬆";
             isAscending = !isAscending;
             btnAsc.Text = isAscending ? "⬆" : "⬇";
             ApplyGlobalSort();
@@ -202,60 +198,56 @@ namespace DA_Trello
             ApplyGlobalSort();
         }
 
-
-        // Hàm này KHÔNG CẦN tham số đầu vào.
-        // Nó tự biết nhìn vào ComboBox và Button để lấy thông tin.
         private void ApplyGlobalSort()
         {
-            // 1. Tự lấy thông tin từ UI
-            int sortType = cmbSort.SelectedIndex; // Tự lấy index
-            bool isAscending = (btnAsc.Text == "⬆");  // Tự check text nút
+            // Tự lấy thông tin từ UI
+            int sortType = cmbSort.SelectedIndex; //lấy index
+            bool isAscending = (btnAsc.Text == "⬆");  //check text nút
 
-            // 2. Gọi hàm sort cho 3 cột (Helper mình viết lúc nãy)
-            Helper_SortColumn(col_Todo, sortType, isAscending);
-            Helper_SortColumn(col_Doing, sortType, isAscending);
-            Helper_SortColumn(col_Done, sortType, isAscending);
+            //Gọi hàm sort cho 3 cột 
+            Helper_SortColumn(colTodo, sortType, isAscending);
+            Helper_SortColumn(colDoing, sortType, isAscending);
+            Helper_SortColumn(colDone, sortType, isAscending);
         }
-        // Hàm phụ trợ để đỡ viết lặp lại code 3 lần
+        // Hàm phụ trợ để sort
         private void Helper_SortColumn(Columns col, int type, bool isAsc)
         {
-            // B1: Sort theo thuật toán tương ứng
+            //Sort theo thuật toán tương ứng
             switch (type)
             {
-                case 0: col.myInternalList.SortByDate(); break;     // Bubble
-                case 1: col.myInternalList.SortByTitle(); break;    // Selection
-                case 2: col.myInternalList.SortByPriority(); break; // Insertion
+                case 0: col.myInternalList.SortByDate(); break;    
+                case 1: col.myInternalList.SortByTitle(); break;    
+                case 2: col.myInternalList.SortByPriority(); break; 
             }
 
-            // B2: Nếu người dùng chọn Giảm dần -> Đảo ngược
-            // (Lưu ý: Các thuật toán trên mặc định là Tăng dần)
+            //Nếu người dùng chọn Giảm dần -> Đảo ngược
             if (!isAsc)
             {
                 col.myInternalList.Reverse();
             }
 
-            // B3: Vẽ lại ngay lập tức
+            //Vẽ lại ngay lập tức
             col.RenderList(col.myInternalList);
         }
 
+        //mặc định mỗi lần mở lên sẽ load phần này
         private void Form1_Load(object sender, EventArgs e)
         {
-            // 1. Load dữ liệu từ file lên trước (QUAN TRỌNG)
-            col_Todo.myInternalList.LoadFromFile("todo.json");
-            col_Doing.myInternalList.LoadFromFile("doing.json");
-            col_Done.myInternalList.LoadFromFile("done.json");
+            //Load dữ liệu từ file lên trước (QUAN TRỌNG)
+            colTodo.myInternalList.LoadFromFile("todo.json");
+            colDoing.myInternalList.LoadFromFile("doing.json");
+            colDone.myInternalList.LoadFromFile("done.json");
 
-            // 2. Set giao diện mặc định
+            //Set giao diện mặc định
             btnAsc.Text = "⬆";
 
-            // 3. Kích hoạt Sort mặc định (Date)
-            // Dòng này phải nằm SAU khi load file, nếu không là sort không khí đấy
+            //Kích hoạt Sort mặc định (Date)
             if (cmbSort.Items.Count > 0)
             {
                 cmbSort.SelectedIndex = 0;
-                Helper_SortColumn(col_Todo, 0, true);
-                Helper_SortColumn(col_Doing, 0, true);
-                Helper_SortColumn(col_Done, 0, true);
+                Helper_SortColumn(colTodo, 0, true);
+                Helper_SortColumn(colDoing, 0, true);
+                Helper_SortColumn(colDone, 0, true);
             }
         }
     }
