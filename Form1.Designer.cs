@@ -35,5 +35,9 @@
         private Columns col_Doing;
         private Columns col_Done;
         private TextBox txtSearch;
+        private ComboBox cmbSort;
+        private Label lblSearchBar;
+        private Label lblSort;
+        private Button btnAsc;
     }
 }

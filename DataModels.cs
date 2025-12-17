@@ -249,99 +249,120 @@ namespace DA_Trello
             return false;
         }
 
-        public void SortByTitle(bool ascending)
+        // Selection Sort: Tìm Min rồi đổi chỗ
+        public void SortByTitle()
         {
             if (head == null || head.Next == null) return;
 
-            // Vòng lặp 1: Đi từ đầu đến áp chót
             for (NoteNode current = head; current.Next != null; current = current.Next)
             {
-                NoteNode target = current;
+                NoteNode maxNode = current;
 
-                // Vòng lặp 2: Đi tìm "ứng viên" thay thế
                 for (NoteNode scanner = current.Next; scanner != null; scanner = scanner.Next)
                 {
-                    // So sánh không phân biệt hoa thường
-                    int comparison = string.Compare(scanner.Data.Title, target.Data.Title, StringComparison.OrdinalIgnoreCase);
-
-                    if (ascending)
+                    // So sánh A-Z (OrdinalIgnoreCase)
+                    if (string.Compare(scanner.Data.Title, maxNode.Data.Title, StringComparison.OrdinalIgnoreCase) > 0)
                     {
-                        // Tăng dần (A -> Z): Tìm thằng nhỏ hơn
-                        if (comparison < 0) target = scanner;
-                    }
-                    else
-                    {
-                        // Giảm dần (Z -> A): Tìm thằng lớn hơn
-                        if (comparison > 0) target = scanner;
+                        maxNode = scanner;
                     }
                 }
 
-                // Nếu tìm thấy ứng viên tốt hơn thì đổi chỗ
-                if (target != current)
+                if (maxNode != current)
                 {
-                    SwapData(current, target);
+                    SwapData(current, maxNode);
                 }
             }
         }
 
-        public void SortByPriority(bool ascending)
+        // Insertion Sort: Chèn ngược
+        public void SortByPriority()
         {
             if (head == null || head.Next == null) return;
 
-            for (NoteNode current = head; current.Next != null; current = current.Next)
+            // Bắt đầu từ node thứ 2
+            NoteNode current = head.Next;
+
+            while (current != null)
             {
-                NoteNode target = current;
+                // Lưu lại vị trí hiện tại để tí nữa đi tiếp
+                NoteNode nextNode = current.Next;
 
-                for (NoteNode scanner = current.Next; scanner != null; scanner = scanner.Next)
+                // Logic chèn ngược:
+                // So sánh 'current' với các thằng đứng trước nó (Prev)
+                NoteNode search = current;
+
+                while (search.Prev != null && search.Prev.Data.Priority < search.Data.Priority)
                 {
-                    // So sánh số nguyên
-                    if (ascending)
-                    {
-                        // Tăng dần (0 -> 9)
-                        if (scanner.Data.Priority < target.Data.Priority) target = scanner;
-                    }
-                    else
-                    {
-                        // Giảm dần (9 -> 0)
-                        if (scanner.Data.Priority > target.Data.Priority) target = scanner;
-                    }
+                    // Thì đổi chỗ (Dịch chuyển data về phía trước)
+                    SwapData(search, search.Prev);
+
+                    // Lùi lại 1 bước để so sánh tiếp
+                    search = search.Prev;
                 }
 
-                if (target != current)
-                {
-                    SwapData(current, target);
-                }
+                // Đi tiếp sang node kế tiếp của vòng lặp chính
+                current = nextNode;
             }
         }
 
-        public void SortByDate(bool ascending)
+        // Bubble Sort: Nổi bọt
+        public void SortByDate()
         {
             if (head == null || head.Next == null) return;
 
-            for (NoteNode current = head; current.Next != null; current = current.Next)
+            bool swapped;
+            do
             {
-                NoteNode target = current;
+                swapped = false;
+                NoteNode current = head;
 
-                for (NoteNode scanner = current.Next; scanner != null; scanner = scanner.Next)
+                // Duyệt từ đầu đến sát đuôi
+                while (current.Next != null)
                 {
-                    // So sánh ngày tháng (DateTime hỗ trợ toán tử < >)
-                    if (ascending)
+                    // So sánh ngày: Nếu thằng trước MỚI HƠN (lớn hơn) thằng sau -> Đẩy ra sau
+                    // (Mặc định xếp từ cũ -> mới)
+                    if (current.Data.CreationDate > current.Next.Data.CreationDate)
                     {
-                        // Cũ nhất lên đầu (Oldest first)
-                        if (scanner.Data.CreationDate < target.Data.CreationDate) target = scanner;
+                        SwapData(current, current.Next);
+                        swapped = true; // Có tráo đổi -> Phải chạy lại vòng nữa kiểm tra
                     }
-                    else
-                    {
-                        // Mới nhất lên đầu (Newest first)
-                        if (scanner.Data.CreationDate > target.Data.CreationDate) target = scanner;
-                    }
+                    current = current.Next;
                 }
+                // Vòng do-while sẽ dừng khi chạy hết list mà không phải swap cái nào (đã xếp xong)
+            } while (swapped);
+        }
 
-                if (target != current)
-                {
-                    SwapData(current, target);
-                }
+        public void Reverse()
+        {
+            if (head == null || head.Next == null)
+                return; //Danh sách rỗng hoặc chỉ có một Node --> Không cần đảo ngược
+
+            NoteNode current = head;
+            NoteNode temp = null;
+
+            while (current != null)
+            {
+                temp = current.Prev; // lưu tạm Node trước
+                current.Prev = current.Next; // Next thành Prev
+                current.Next = temp; // Prev thành Next
+                current = current.Prev; // trỏ sang Node kế tiếp
             }
+
+            // đổi head - tail
+            if (temp != null)
+            {
+                tail = head;
+                head = temp.Prev;
+            }
+        }
+        public void RemoveAll()
+        {
+            // Cắt đứt đầu đuôi
+            head = null;
+            tail = null;
+
+            // Nếu em có biến đếm số lượng (count) thì reset luôn
+            // Count = 0; 
         }
 
         // --- PHẦN 1: HÀM LƯU (SAVE) ---

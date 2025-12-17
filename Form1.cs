@@ -11,14 +11,15 @@ namespace DA_Trello
         {
             InitializeComponent();
 
-            
-
         }
-
 
         private void InitializeComponent()
         {
             panel1 = new Panel();
+            btnAsc = new Button();
+            lblSort = new Label();
+            lblSearchBar = new Label();
+            cmbSort = new ComboBox();
             txtSearch = new TextBox();
             label1 = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -32,6 +33,10 @@ namespace DA_Trello
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(255, 242, 198);
+            panel1.Controls.Add(btnAsc);
+            panel1.Controls.Add(lblSort);
+            panel1.Controls.Add(lblSearchBar);
+            panel1.Controls.Add(cmbSort);
             panel1.Controls.Add(txtSearch);
             panel1.Controls.Add(label1);
             panel1.Dock = DockStyle.Top;
@@ -39,27 +44,74 @@ namespace DA_Trello
             panel1.Name = "panel1";
             panel1.Size = new Size(1082, 50);
             panel1.TabIndex = 0;
-            panel1.Paint += panel1_Paint;
+            // 
+            // btnAsc
+            // 
+            btnAsc.Font = new Font("iCiel Panton Black", 13.7999992F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAsc.Location = new Point(1035, 12);
+            btnAsc.Margin = new Padding(0);
+            btnAsc.Name = "btnAsc";
+            btnAsc.Size = new Size(35, 27);
+            btnAsc.TabIndex = 5;
+            btnAsc.Text = "⬆\r\n";
+            btnAsc.UseVisualStyleBackColor = true;
+            btnAsc.Click += btnAsc_Click;
+            // 
+            // lblSort
+            // 
+            lblSort.AutoSize = true;
+            lblSort.BackColor = Color.Transparent;
+            lblSort.Font = new Font("iCiel Panton Light", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblSort.Location = new Point(759, 12);
+            lblSort.Name = "lblSort";
+            lblSort.Size = new Size(82, 24);
+            lblSort.TabIndex = 4;
+            lblSort.Text = "Sort By:";
+            // 
+            // lblSearchBar
+            // 
+            lblSearchBar.AutoSize = true;
+            lblSearchBar.BackColor = Color.Transparent;
+            lblSearchBar.Font = new Font("iCiel Panton Light", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblSearchBar.Location = new Point(250, 14);
+            lblSearchBar.Name = "lblSearchBar";
+            lblSearchBar.Padding = new Padding(0, 0, 10, 0);
+            lblSearchBar.Size = new Size(116, 24);
+            lblSearchBar.TabIndex = 3;
+            lblSearchBar.Text = "Search By:";
+            // 
+            // cmbSort
+            // 
+            cmbSort.DisplayMember = "0,1,2";
+            cmbSort.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSort.Font = new Font("iCiel Panton Light", 10.7999992F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cmbSort.FormattingEnabled = true;
+            cmbSort.Items.AddRange(new object[] { "Date (Default)", "Title", "Priority" });
+            cmbSort.Location = new Point(847, 11);
+            cmbSort.Name = "cmbSort";
+            cmbSort.Size = new Size(171, 30);
+            cmbSort.TabIndex = 2;
+            cmbSort.ValueMember = "0,1,2";
+            cmbSort.SelectedIndexChanged += cmbSort_SelectSort;
             // 
             // txtSearch
             // 
-            txtSearch.Location = new Point(259, 12);
+            txtSearch.Location = new Point(372, 12);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(600, 27);
+            txtSearch.Size = new Size(336, 27);
             txtSearch.TabIndex = 1;
             txtSearch.TextChanged += txtSearch_TextChanged;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("[UEE] TuffW01-Normal", 13.7999992F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.Font = new Font("iCiel Panton Black Italic", 16.1999989F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.Black;
             label1.Location = new Point(12, 9);
             label1.Name = "label1";
-            label1.Size = new Size(105, 26);
+            label1.Size = new Size(133, 32);
             label1.TabIndex = 0;
             label1.Text = "My Board";
-            label1.Click += label1_Click;
             // 
             // tableLayoutPanel1
             // 
@@ -87,7 +139,6 @@ namespace DA_Trello
             col_Todo.Size = new Size(354, 597);
             col_Todo.TabIndex = 0;
             col_Todo.Title = "ToDo";
-            col_Todo.Load += columns1_Load;
             // 
             // col_Doing
             // 
@@ -98,7 +149,6 @@ namespace DA_Trello
             col_Doing.Size = new Size(354, 597);
             col_Doing.TabIndex = 1;
             col_Doing.Title = "Doing";
-            col_Doing.Load += columns2_Load;
             // 
             // col_Done
             // 
@@ -109,7 +159,6 @@ namespace DA_Trello
             col_Done.Size = new Size(356, 597);
             col_Done.TabIndex = 2;
             col_Done.Title = "Done";
-            col_Done.Load += columns3_Load;
             // 
             // Form1
             // 
@@ -139,42 +188,75 @@ namespace DA_Trello
             col_Todo.Search(keyword);
             col_Done.Search(keyword);
         }
+
+        private void btnAsc_Click(object sender, EventArgs e)
+        {
+            bool isAscending = btnAsc.Text == "⬆"; // Ví dụ check text nút
+            isAscending = !isAscending;
+            btnAsc.Text = isAscending ? "⬆" : "⬇";
+            ApplyGlobalSort();
+        }
+
+        private void cmbSort_SelectSort(object sender, EventArgs e)
+        {
+            ApplyGlobalSort();
+        }
+
+
+        // Hàm này KHÔNG CẦN tham số đầu vào.
+        // Nó tự biết nhìn vào ComboBox và Button để lấy thông tin.
+        private void ApplyGlobalSort()
+        {
+            // 1. Tự lấy thông tin từ UI
+            int sortType = cmbSort.SelectedIndex; // Tự lấy index
+            bool isAscending = (btnAsc.Text == "⬆");  // Tự check text nút
+
+            // 2. Gọi hàm sort cho 3 cột (Helper mình viết lúc nãy)
+            Helper_SortColumn(col_Todo, sortType, isAscending);
+            Helper_SortColumn(col_Doing, sortType, isAscending);
+            Helper_SortColumn(col_Done, sortType, isAscending);
+        }
+        // Hàm phụ trợ để đỡ viết lặp lại code 3 lần
+        private void Helper_SortColumn(Columns col, int type, bool isAsc)
+        {
+            // B1: Sort theo thuật toán tương ứng
+            switch (type)
+            {
+                case 0: col.myInternalList.SortByDate(); break;     // Bubble
+                case 1: col.myInternalList.SortByTitle(); break;    // Selection
+                case 2: col.myInternalList.SortByPriority(); break; // Insertion
+            }
+
+            // B2: Nếu người dùng chọn Giảm dần -> Đảo ngược
+            // (Lưu ý: Các thuật toán trên mặc định là Tăng dần)
+            if (!isAsc)
+            {
+                col.myInternalList.Reverse();
+            }
+
+            // B3: Vẽ lại ngay lập tức
+            col.RenderList(col.myInternalList);
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
-          
+            // 1. Load dữ liệu từ file lên trước (QUAN TRỌNG)
+            col_Todo.myInternalList.LoadFromFile("todo.json");
+            col_Doing.myInternalList.LoadFromFile("doing.json");
+            col_Done.myInternalList.LoadFromFile("done.json");
+
+            // 2. Set giao diện mặc định
+            btnAsc.Text = "⬆";
+
+            // 3. Kích hoạt Sort mặc định (Date)
+            // Dòng này phải nằm SAU khi load file, nếu không là sort không khí đấy
+            if (cmbSort.Items.Count > 0)
+            {
+                cmbSort.SelectedIndex = 0;
+                Helper_SortColumn(col_Todo, 0, true);
+                Helper_SortColumn(col_Doing, 0, true);
+                Helper_SortColumn(col_Done, 0, true);
+            }
         }
-       
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void flwPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void columns2_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void columns1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void columns3_Load(object sender, EventArgs e)
-        {
-
-        }
-
-
     }
 }

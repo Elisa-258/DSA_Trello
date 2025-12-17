@@ -14,7 +14,7 @@ namespace DA_Trello
 {
     public partial class Columns : UserControl
     {
-        private TrelloList myInternalList = new TrelloList();
+        public TrelloList myInternalList = new TrelloList();
         private string tempFilePath = "";
         public Columns()
         {
@@ -153,7 +153,7 @@ namespace DA_Trello
         }
 
         // Nhận vào TrelloList chứ không phải List<> nữa
-        private void RenderList(TrelloList dataSource)
+        public void RenderList(TrelloList dataSource)
         {
             this.flw_ColumnList.Controls.Clear();
 
@@ -330,9 +330,9 @@ namespace DA_Trello
                     // Cách B: Chỉ xóa cái control đó thôi (Nhanh hơn, đỡ lag)
                     // this.FlowLayoutPanel.Controls.Remove(card);
 
-               
+
                 }
-                
+
             }));
         }
 
@@ -343,7 +343,7 @@ namespace DA_Trello
             if (card == null) return;
 
             // Hỏi người dùng cho chắc ăn (Optional, thích thì để)
-            var confirmResult = MessageBox.Show("Em có chắc muốn xóa cái này không?",
+            var confirmResult = MessageBox.Show("Bạn có muốn xóa thẻ này không?",
                                              "Xác nhận xóa",
                                              MessageBoxButtons.YesNo);
 
@@ -360,12 +360,51 @@ namespace DA_Trello
                     // 3. Vẽ lại giao diện (để cái thẻ biến mất)
                     RenderList(myInternalList);
                 }
-               
+
             }
         }
         private void cmbPrior_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
+
+        private void btn_RemoveAll_Click(object sender, EventArgs e)
+        {
+            
+            // 1. Kiểm tra: Nếu danh sách đang rỗng thì thôi, hỏi làm gì cho mệt
+            if (myInternalList.head == null)
+            {
+                return;
+            }
+
+            // 2. HỎI XÁC NHẬN (Quan trọng nhất)
+            // MessageBoxButtons.YesNo: Hiện nút Yes/No
+            // MessageBoxIcon.Warning: Hiện cái khiên vàng cảnh báo
+            DialogResult result = MessageBox.Show(
+                "Bạn có muốn xóa toàn bộ thẻ trong cột này không?\nHành động này không thể hoàn tác.",
+                "Xác nhận xóa tất cả",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            // 3. Nếu chọn YES thì mới ra tay
+            if (result == DialogResult.Yes)
+            {
+                // A. Xóa trong RAM (Linked List)
+                myInternalList.Clear();
+
+                // B. Xóa trong Ổ CỨNG (Lưu đè file rỗng lên file cũ)
+                // QUAN TRỌNG: Quên dòng này là tắt app bật lại nó hiện hồn về đấy
+                myInternalList.SaveToFile(GetFilePath());
+
+                // C. Xóa trên GIAO DIỆN
+                // Cách 1: Gọi RenderList() -> Nó thấy list rỗng nó tự xóa hết
+                RenderList(myInternalList);
+
+                // Cách 2: Xóa trực tiếp cho lẹ (nếu muốn tối ưu)
+                // this.flw_ColumnList.Controls.Clear();
+            }
+        }
+    
     }
 }

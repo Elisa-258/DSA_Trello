@@ -30,6 +30,7 @@
         {
             cmbPrior = new ComboBox();
             pnl_ColumnTitle = new Panel();
+            btn_RemoveAll = new Button();
             lblColumnTitle = new Label();
             pnl_AddCard = new Panel();
             lbl_AddCard = new Label();
@@ -68,6 +69,7 @@
             // pnl_ColumnTitle
             // 
             pnl_ColumnTitle.BackColor = Color.FromArgb(192, 192, 255);
+            pnl_ColumnTitle.Controls.Add(btn_RemoveAll);
             pnl_ColumnTitle.Controls.Add(lblColumnTitle);
             pnl_ColumnTitle.Dock = DockStyle.Top;
             pnl_ColumnTitle.Font = new Font("iCiel Panton Black", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
@@ -76,6 +78,18 @@
             pnl_ColumnTitle.Name = "pnl_ColumnTitle";
             pnl_ColumnTitle.Size = new Size(350, 45);
             pnl_ColumnTitle.TabIndex = 0;
+            // 
+            // btn_RemoveAll
+            // 
+            btn_RemoveAll.BackColor = Color.Transparent;
+            btn_RemoveAll.BackgroundImage = Properties.Resources.x_mark_18672116;
+            btn_RemoveAll.BackgroundImageLayout = ImageLayout.Zoom;
+            btn_RemoveAll.Location = new Point(311, 10);
+            btn_RemoveAll.Name = "btn_RemoveAll";
+            btn_RemoveAll.Size = new Size(25, 25);
+            btn_RemoveAll.TabIndex = 6;
+            btn_RemoveAll.UseVisualStyleBackColor = false;
+            btn_RemoveAll.Click += btn_RemoveAll_Click;
             // 
             // lblColumnTitle
             // 
@@ -279,5 +293,6 @@
         private Panel pnlAddFile;
         private Label lblShowNameFile;
         private ComboBox cmbPrior;
+        private Button btn_RemoveAll;
     }
 }
